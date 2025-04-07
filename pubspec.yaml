@@ -39,6 +39,8 @@ dependencies:
   flutter_riverpod: ^2.6.1
   shared_preferences: ^2.5.3
   lucide_icons: ^0.257.0
+  image_picker: ^1.1.2
+  cloudinary_public: ^0.23.1
   # lucide_icons_flutter: ^2.0.2
 
 dev_dependencies:

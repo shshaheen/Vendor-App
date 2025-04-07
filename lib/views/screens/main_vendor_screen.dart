@@ -1,6 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:vendor_app/views/screens/nav_screens/earnings_screen.dart';
+import 'package:vendor_app/views/screens/nav_screens/edit_screen.dart';
+import 'package:vendor_app/views/screens/nav_screens/orders_screen.dart';
+import 'package:vendor_app/views/screens/nav_screens/profile_screen.dart';
+import 'package:vendor_app/views/screens/nav_screens/upload_screen.dart';
 
 class MainVendorScreen extends StatefulWidget {
   const MainVendorScreen({super.key});
@@ -11,10 +16,19 @@ class MainVendorScreen extends StatefulWidget {
 
 class _MainVendorScreenState extends State<MainVendorScreen> {
   int _pageIndex = 0;
+
+  List<Widget> _pages = [
+    EarningsScreen(),
+    UploadScreen(),
+    EditScreen(),
+    OrdersScreen(),
+    VendorProfileScreen(),
+    
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(child: Text("Main Vendor Screen")),
+      
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _pageIndex,
         onTap: (value) {
@@ -43,11 +57,12 @@ class _MainVendorScreenState extends State<MainVendorScreen> {
             label: 'Orders',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.logout),
-            label: 'Logout',
+            icon: Icon(Icons.person),
+            label: 'Profile',
           ),
         ],
       ),
+      body: _pages[_pageIndex],
     );
   }
 }
