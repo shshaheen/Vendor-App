@@ -17,7 +17,7 @@ class MainVendorScreen extends StatefulWidget {
 class _MainVendorScreenState extends State<MainVendorScreen> {
   int _pageIndex = 0;
 
-  List<Widget> _pages = [
+  List<Widget> pages = [
     EarningsScreen(),
     UploadScreen(),
     EditScreen(),
@@ -62,7 +62,7 @@ class _MainVendorScreenState extends State<MainVendorScreen> {
           ),
         ],
       ),
-      body: _pages[_pageIndex],
+      body: pages[_pageIndex],
     );
   }
 }

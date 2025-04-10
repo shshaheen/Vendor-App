@@ -16,8 +16,8 @@ class SubcategoryController {
       },
     );
 
-    print("Response Status: ${response.statusCode}");
-    print("Response Body: ${response.body}");
+    // print("Response Status: ${response.statusCode}");
+    // print("Response Body: ${response.body}");
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> decodedResponse = jsonDecode(response.body);
@@ -36,9 +36,9 @@ class SubcategoryController {
       print("Failed to fetch subcategories, Status Code: ${response.statusCode}");
       return [];
     }
-  } catch (e, stacktrace) {
-    print("Error fetching categories: $e");
-    print("StackTrace: $stacktrace");
+  } catch (e) {
+    // print("Error fetching categories: $e");
+    // print("StackTrace: $stacktrace");
     return [];
   }
 }
