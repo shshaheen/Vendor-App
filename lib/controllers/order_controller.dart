@@ -122,6 +122,7 @@ class OrderController {
         Uri.parse('$uri/api/orders/$id/delivered'),
         body: jsonEncode({
           'delivered': true,
+          'processing': false,
         }),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8'
@@ -146,6 +147,7 @@ class OrderController {
         Uri.parse('$uri/api/orders/$id/processing'),
         body: jsonEncode({
           'processing': false,
+          'delivered': false,
         }),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8'

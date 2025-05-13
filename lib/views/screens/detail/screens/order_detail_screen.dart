@@ -1,21 +1,23 @@
 // import 'package:custom_rating_bar/custom_rating_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:vendor_app/controllers/order_controller.dart';
 // import 'package:smart_cart/controllers/product_review_controller.dart';
 import 'package:vendor_app/models/order.dart';
+import 'package:vendor_app/provider/order_provider.dart';
 
-class OrderDetailScreen extends StatefulWidget {
+class OrderDetailScreen extends ConsumerStatefulWidget {
   final Order order;
 
   const OrderDetailScreen({super.key, required this.order});
 
   @override
-  State<OrderDetailScreen> createState() => _OrderDetailScreenState();
+  ConsumerState<OrderDetailScreen> createState() => _OrderDetailScreenState();
 }
 
-class _OrderDetailScreenState extends State<OrderDetailScreen> {
-  final TextEditingController _reviewController = TextEditingController();
+class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
+  // final TextEditingController _reviewController = TextEditingController();
   final OrderController _orderController = OrderController();
   double rating = 0.0;
 
@@ -24,6 +26,13 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // watch the list of orders to trigger automatic UI rebuilds
+    
+    final orders  = ref.watch(orderProvider);
+    // Find the updated order in the list
+    final updatedOrder = orders.firstWhere((order) => order.id == widget.order.id,
+    orElse: () => widget.order,
+    );
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -168,9 +177,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                               height: 25,
                               clipBehavior: Clip.antiAlias,
                               decoration: BoxDecoration(
-                                color: widget.order.delivered == true
+                                color: updatedOrder.delivered == true
                                     ? const Color(0xFF3C55EF)
-                                    : widget.order.processing == true
+                                    : updatedOrder.processing == true
                                         ? Colors.purple
                                         : Colors.red,
                                 borderRadius: BorderRadius.circular(
@@ -184,9 +193,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                     left: 9,
                                     top: 2,
                                     child: Text(
-                                      widget.order.delivered == true
+                                      updatedOrder.delivered == true
                                           ? "Delivered"
-                                          : widget.order.processing == true
+                                          : updatedOrder.processing == true
                                               ? "Processing"
                                               : "Cancelled",
                                       style: GoogleFonts.montserrat(
@@ -281,24 +290,44 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       TextButton(
-                          onPressed: () async {
+                          onPressed: updatedOrder.delivered == true || updatedOrder.processing == false 
+                          ? null : () async {
                             await _orderController.updateDeliveryStatus(
-                                id: widget.order.id, context: context);
+                                id: widget.order.id, context: context).whenComplete((){
+                                  ref.read(orderProvider.notifier).
+                                  updateOrderStatus(
+                                    widget.order.id, 
+                                    delivered: true
+                                  );
+                                });
                           },
                           child: Text(
-                            'Mark as Delivered?',
+                            updatedOrder.delivered == true
+                                ? 'Order Delivered'
+                                : 'Mark as Delivered?',
                             style: GoogleFonts.montserrat(
                                 fontWeight: FontWeight.bold),
                           )),
                       TextButton(
-                          onPressed: () async {
+                          onPressed: updatedOrder.processing == false ||
+                                  updatedOrder.delivered == true
+                          ? null : () async {
                             await _orderController.cancelOrder(
                               id: widget.order.id,
                               context: context,
+                            ).whenComplete(
+                              (){
+                                ref.read(orderProvider.notifier).updateOrderStatus(
+                                  widget.order.id,
+                                  processing: false,
+                                );
+                              }
                             );
                           },
                           child: Text(
-                            'Cancel',
+                            updatedOrder.processing == false
+                                ? 'Cancelled'
+                                : 'Cancel',
                             style: GoogleFonts.montserrat(
                               fontWeight: FontWeight.bold,
                               color: Colors.red,
