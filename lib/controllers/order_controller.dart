@@ -73,10 +73,11 @@ class OrderController {
       if (response.statusCode == 200) {
         // Parse the JSON response body into dynamic list
         // This convert the json data into a formate that can be further processed in dart
-        List<dynamic> jsonData = jsonDecode(response.body);        
+        List<dynamic> jsonData = jsonDecode(response.body);
         // Map the dynamic list  to list of Orders object using the fromJson factory method
         // this step converts the raw data into a list of orders instances, which are easier to work with in the application
-        List<Order> orders = jsonData.map((order) => Order.fromJson(order)).toList();
+        List<Order> orders =
+            jsonData.map((order) => Order.fromJson(order)).toList();
         // Return the list of orders
         return orders;
       }
@@ -84,7 +85,7 @@ class OrderController {
       else {
         throw Exception('Failed to load orders');
       }
-    } catch (e) {      
+    } catch (e) {
       // If an error occurs, print the error message
       throw Exception('Error loading orders: $e');
     }
@@ -92,7 +93,7 @@ class OrderController {
 
   // delete order by ID
   Future<void> deleteOrder({required String id, required context}) async {
-    try{
+    try {
       // send an HTTP DELETE request to the orders by the order ID
       http.Response response = await http.delete(
         Uri.parse('$uri/api/orders/$id'),
@@ -102,13 +103,63 @@ class OrderController {
       );
 
       // handle the HTTP response
-      manageHttpResponse(response: response, context: context, onSuccess: (){
-        showSnackBar(context, "Order deleted successfully");
-      });
-   
-    }
-    catch(e){
+      manageHttpResponse(
+          response: response,
+          context: context,
+          onSuccess: () {
+            showSnackBar(context, "Order deleted successfully");
+          });
+    } catch (e) {
       throw Exception('Error deleting order: $e');
+    }
+  }
+
+  Future<void> updateDeliveryStatus(
+      {required String id, required context}) async {
+    try {
+      // send an HTTP PUT request to the orders by the order ID
+      http.Response response = await http.patch(
+        Uri.parse('$uri/api/orders/$id/delivered'),
+        body: jsonEncode({
+          'delivered': true,
+        }),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8'
+        },
+      );
+
+      manageHttpResponse(
+          response: response,
+          context: context,
+          onSuccess: () {
+            showSnackBar(context, "Order delivered successfully");
+          });
+    } catch (e) {
+      throw Exception('Error updating delivery status: $e');
+    }
+  }
+
+  Future<void> cancelOrder({required String id, required context}) async {
+    try {
+      // send an HTTP PUT request to the orders by the order ID
+      http.Response response = await http.patch(
+        Uri.parse('$uri/api/orders/$id/processing'),
+        body: jsonEncode({
+          'processing': false,
+        }),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8'
+        },
+      );
+
+      manageHttpResponse(
+          response: response,
+          context: context,
+          onSuccess: () {
+            showSnackBar(context, "Order Cancelled");
+          });
+    } catch (e) {
+      throw Exception('Error updating delivery status: $e');
     }
   }
 }

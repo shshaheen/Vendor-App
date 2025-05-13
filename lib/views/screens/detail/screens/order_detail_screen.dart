@@ -1,6 +1,7 @@
 // import 'package:custom_rating_bar/custom_rating_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:vendor_app/controllers/order_controller.dart';
 // import 'package:smart_cart/controllers/product_review_controller.dart';
 import 'package:vendor_app/models/order.dart';
 
@@ -15,7 +16,7 @@ class OrderDetailScreen extends StatefulWidget {
 
 class _OrderDetailScreenState extends State<OrderDetailScreen> {
   final TextEditingController _reviewController = TextEditingController();
-
+  final OrderController _orderController = OrderController();
   double rating = 0.0;
 
   // final ProductReviewController _productReviewController =
@@ -280,21 +281,29 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       TextButton(
-                        onPressed: () {}, 
-                        child: Text('Mark as Delivered?',
-                        style: GoogleFonts.montserrat(
-                          fontWeight: FontWeight.bold
-                          ),
-                        )),
+                          onPressed: () async {
+                            await _orderController.updateDeliveryStatus(
+                                id: widget.order.id, context: context);
+                          },
+                          child: Text(
+                            'Mark as Delivered?',
+                            style: GoogleFonts.montserrat(
+                                fontWeight: FontWeight.bold),
+                          )),
                       TextButton(
-                        onPressed: () {}, 
-                        child: Text('Cancel',
-                        style: GoogleFonts.montserrat(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.red,
-                          ),
-                        )
-                      ),
+                          onPressed: () async {
+                            await _orderController.cancelOrder(
+                              id: widget.order.id,
+                              context: context,
+                            );
+                          },
+                          child: Text(
+                            'Cancel',
+                            style: GoogleFonts.montserrat(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.red,
+                            ),
+                          )),
                     ],
                   )
                 ],
